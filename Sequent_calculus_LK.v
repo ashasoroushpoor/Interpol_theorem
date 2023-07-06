@@ -19,7 +19,7 @@ Inductive LK : nat -> list prop -> list prop -> Prop :=
 |LKlE: forall G G' D (a b : prop) n, G ++ (a :: b :: G') ⇒ D >< n ->
         G ++ (b :: a :: G') ⇒ D >< (S n)
 (* Contraction *)
-|LKrC: forall G D (a : prop) n, G ⇒ a :: a :: D >< n -> G ⇒ a :: D >< n
+|LKrC: forall G D (a : prop) n, G ⇒ a :: a :: D >< n -> G ⇒ a :: D >< (S n)
 |LKlC: forall G D (a : prop) n, G ++ a ++ a ⇒ D >< n -> G ++ a ⇒ D >< (S n)
 (* Logical Rules *)
 (* Conjunction *)

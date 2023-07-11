@@ -784,6 +784,8 @@ Proof.
   apply (singleton_mem_incl _ _ nIs).
 Qed.
 
+
+(*added section by asha*)
 (*        
 Check 1~0~1~0~1.
 Compute (∅ ⊆ ∅).

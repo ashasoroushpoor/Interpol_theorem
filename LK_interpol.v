@@ -243,6 +243,14 @@ G1 ++ G2 ⇒ D1 ++ D2 >< n ->
     - admit.
     - admit.
     - admit.
-    - subst.
+    - subst. destruct D1, D2; inversion H2; subst.
+        + specialize (IHn1 G1 G2 [] (a :: D2) H4) as H6. destruct H6 as [c0 [m1 [m2 [H6 [H6' H7]]]]].
+        specialize  (IHn2 G1 G2 [] (b :: D2) H5) as H8. destruct H8 as [c1 [m1' [m2' [H8 [H8' H9]]]]].
+        exists (c0 ∧ c1), (twon m1 m1'), (twon (onen m2) (onen m2')). repeat split.
+            * constructor 8. apply H6. apply H8.
+            * constructor 8.
+                ** constructor 9. apply H6'.
+                ** constructor 10. apply H8'.
+            * simpl. simpl in H9. simpl in H7.
 
 Admitted.

@@ -786,6 +786,42 @@ Qed.
 
 
 (*added section by asha*)
+
+Lemma incl_union_inter_absorb : forall a b c d, a ⊆ (b ∩ c) -> a ⊆ (b ∩ (d ∪ c)).
+Proof.
+  intros.
+  apply mem_incl. intros. rewrite mem_incl in H.
+  specialize (H n H0) as H'. 
+  apply mem_intersection. split.
+    - rewrite intersection_comm in H'. 
+    specialize (intersection_mem n c b H') as H1. apply H1.
+    - specialize (intersection_mem n b c H') as H1.
+    rewrite union_comm.
+    apply mem_union. apply H1.
+Qed.
+
+Lemma incl_union_inter_add:
+forall c1 c2 x y a b,
+c1 ⊆ (x ∩ (a ∪ y)) -> c2 ⊆ (x ∩ (b ∪ y))
+-> c1 ∪ c2 ⊆ (x ∩ (a ∪ b ∪ y)).
+Proof. intros. apply mem_incl. intros.
+rewrite mem_incl in H. rewrite mem_incl in H0.
+apply mem_intersection.
+apply unioun_mem in H1. destruct H1.
+  - specialize (H n H1) as H'. split.
+    + rewrite intersection_comm in H'. 
+    apply intersection_mem in H'. apply H'.
+    + apply intersection_mem in H'.
+    rewrite <- union_assoc. rewrite union_comm.
+    rewrite <- union_assoc. rewrite (union_comm y a).
+    rewrite union_comm. apply mem_union. apply H'.
+  - specialize (H0 n H1) as H'. split.
+    + rewrite intersection_comm in H'. 
+    apply intersection_mem in H'. apply H'.
+    + apply intersection_mem in H'.
+    rewrite <- union_assoc. rewrite union_comm.
+    apply mem_union. apply H'.
+Qed.
 (*        
 Check 1~0~1~0~1.
 Compute (∅ ⊆ ∅).

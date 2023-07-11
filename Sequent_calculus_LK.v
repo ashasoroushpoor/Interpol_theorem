@@ -11,6 +11,9 @@ Inductive Node : Type :=
 |onen: Node -> Node
 |twon: Node -> Node -> Node.
 
+Notation "☉ M" := (onen M) (no associativity, at level 65).
+Notation "M1 ≍ M2" := (twon M1 M2 )(no associativity, at level 66). 
+
 (* Inductive LK : Node -> list prop -> list prop -> list prop -> list prop -> Prop :=
 (* Axiom : A |- A *)
 | LKA: forall p : prop, p +' [] ⇒ p +'' [] >< leaf
@@ -60,55 +63,55 @@ Inductive LK : Node -> list prop -> list prop -> Prop :=
 (* Structral Rules *)
 (* Weakening *)
 (*2*)
-|LKrW: forall G D (a: prop) n, G ⇒ D >< n-> G ⇒ a :: D >< onen n
+|LKrW: forall G D (a: prop) n, G ⇒ D >< n-> G ⇒ a :: D >< ☉n
 (*3*)
-|LKlW: forall G D (a: prop) n, G ⇒ D >< n -> a :: G  ⇒ D >< onen n
+|LKlW: forall G D (a: prop) n, G ⇒ D >< n -> a :: G  ⇒ D >< ☉ n
 (* Exchange *)
 (*4*)
 |LKrE: forall G D D' (a b : prop) n, G ⇒ D ++ (a :: b :: D') >< n -> 
-        G ⇒ D ++ (b :: a :: D') >< onen n
+        G ⇒ D ++ (b :: a :: D') >< ☉ n
 (*5*)
 |LKlE: forall G G' D (a b : prop) n, G ++ (a :: b :: G') ⇒ D >< n ->
-        G ++ (b :: a :: G') ⇒ D >< onen n
+        G ++ (b :: a :: G') ⇒ D >< ☉ n
 (* Contraction *)
 (*6*)
-|LKrC: forall G D (a : prop) n, G ⇒ a :: a :: D >< n -> G ⇒ a :: D >< onen n
+|LKrC: forall G D (a : prop) n, G ⇒ a :: a :: D >< n -> G ⇒ a :: D >< ☉ n
 (*7*)
-|LKlC: forall G D (a : prop) n, a :: a :: G  ⇒ D >< n -> a :: G ⇒ D >< onen n
+|LKlC: forall G D (a : prop) n, a :: a :: G  ⇒ D >< n -> a :: G ⇒ D >< ☉ n
 (* Logical Rules *)
 (* Conjunction *)
 (*8*)
 |LKrA: forall G D (a b: prop) m n,
-G ⇒ a :: D >< m-> G ⇒ b :: D >< n -> G ⇒ (a ∧ b) :: D  >< twon m n
+G ⇒ a :: D >< m-> G ⇒ b :: D >< n -> G ⇒ (a ∧ b) :: D  >< (m ≍ n)
 (*9*)
 |LKl1A: forall G D (a b : prop) n,
-a :: G ⇒ D >< n -> (a ∧ b) :: G ⇒ D >< onen n
+a :: G ⇒ D >< n -> (a ∧ b) :: G ⇒ D >< ☉ n
 (*10*)
 |LKl2A: forall G D (a b : prop) n,
-b :: G ⇒ D >< n -> (a ∧ b) :: G ⇒ D >< onen n
+b :: G ⇒ D >< n -> (a ∧ b) :: G ⇒ D >< ☉ n
 (* Disjunction *)
 (*11*)
 |LKr1O: forall G D (a b : prop) n,
-G ⇒ a :: D >< n -> G ⇒ (a ∨ b) :: D >< onen n
+G ⇒ a :: D >< n -> G ⇒ (a ∨ b) :: D >< ☉ n
 (*12*)
 |LKr2O: forall G D (a b : prop) n,
-G ⇒ b :: D >< n -> G ⇒ (a ∨ b) :: D >< onen n
+G ⇒ b :: D >< n -> G ⇒ (a ∨ b) :: D >< ☉ n
 (*13*)
 |LKlO: forall G D (a b : prop) m n,
-a :: G ⇒ D >< m -> b :: G ⇒ D >< n -> (a ∨ b) :: G  ⇒ D >< twon m n
+a :: G ⇒ D >< m -> b :: G ⇒ D >< n -> (a ∨ b) :: G  ⇒ D >< (m ≍ n)
 (* Negation *)
 (*14*)
-|LKrN: forall G D (a : prop) n, a :: G ⇒ D >< n -> G ⇒ (¬ a) :: D >< onen n
+|LKrN: forall G D (a : prop) n, a :: G ⇒ D >< n -> G ⇒ (¬ a) :: D >< ☉ n
 (*15*)
-|LKlN: forall G D (a : prop) n, G ⇒ a :: D >< n -> (¬ a) :: G  ⇒ D >< onen n
+|LKlN: forall G D (a : prop) n, G ⇒ a :: D >< n -> (¬ a) :: G  ⇒ D >< ☉ n
 (* Implication *)
 (*16*)
 |LKrI: forall G D (a b : prop) n, a :: G  ⇒ b :: D >< n ->
-        G ⇒ (a ⊃ b) :: D >< onen n
+        G ⇒ (a ⊃ b) :: D >< ☉ n
 (*17*)
 |LKlI: forall G D (a b : prop) m n,
         G ⇒ a :: D >< m -> b :: G ⇒ D >< n->
-        (a ⊃ b) :: G ⇒ D >< twon m n
+        (a ⊃ b) :: G ⇒ D >< (m ≍ n)
 where "G ⇒ p >< n" := (LK n G p).
 
 
@@ -116,7 +119,8 @@ where "G ⇒ p >< n" := (LK n G p).
 Lemma mp : forall p q : prop, exists n, (p ⊃ q)::p ⇒ q >< n.
 Proof.
   intros p q.
-  exists (twon (onen (onen leaf)) (onen (onen leaf))). 
+  (* (☉ ☉ leaf) ≍ (☉ ☉ leaf) *)
+  exists ((☉ ☉ leaf) ≍ (☉ ☉ leaf)). 
   (* apply (LKlE [] [] q p (p ⊃ q)). simpl.
   apply (LKlE [] [] q p ) *)
   apply (LKlI p q p q (onen (onen leaf)) (onen (onen leaf))).

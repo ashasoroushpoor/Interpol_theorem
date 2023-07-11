@@ -246,11 +246,53 @@ G1 ++ G2 ⇒ D1 ++ D2 >< n ->
     - subst. destruct D1, D2; inversion H2; subst.
         + specialize (IHn1 G1 G2 [] (a :: D2) H4) as H6. destruct H6 as [c0 [m1 [m2 [H6 [H6' H7]]]]].
         specialize  (IHn2 G1 G2 [] (b :: D2) H5) as H8. destruct H8 as [c1 [m1' [m2' [H8 [H8' H9]]]]].
-        exists (c0 ∧ c1), (twon m1 m1'), (twon (onen m2) (onen m2')). repeat split.
+        exists (c0 ∧ c1), ( m1 ≍ m1'), ( (☉ m2) ≍ (☉ m2')). repeat split.
             * constructor 8. apply H6. apply H8.
             * constructor 8.
                 ** constructor 9. apply H6'.
                 ** constructor 10. apply H8'.
             * simpl. simpl in H9. simpl in H7.
+            apply (incl_union_inter_add).
+                ** apply H7.
+                ** apply H9.
+        + simpl in *. 
+        specialize (IHn1 G1 G2 (a :: D1) [] H4) as H6. destruct H6 as [c0 [m1 [m2 [H6 [H6' H7]]]]].
+        specialize  (IHn2 G1 G2 (b :: D1) [] H5) as H8. destruct H8 as [c1 [m1' [m2' [H8 [H8' H9]]]]].
+        exists (c0 ∨ c1), 
+        (☉ ((☉ ☉ m1) ≍ (☉ ☉ m1'))),
+        (m2 ≍ m2'). repeat split.
+            * apply (LKrE G1 [] D1 (a ∧ b) (c0 ∨ c1) ((☉ ☉ m1) ≍ (☉ ☉ m1'))).
+            simpl. constructor 8.
+                ** apply (LKrE G1 [] D1 (c0 ∨ c1) (a) (☉ m1)).
+                simpl. constructor 11. apply H6.
+                ** apply (LKrE G1 [] D1 (c0 ∨ c1) (b) (☉ m1')).
+                simpl. constructor 12. apply H8.
+            * constructor 13.
+                ** apply H6'.
+                ** apply H8'.
+            * simpl. simpl in H9. simpl in H7.
+            apply (incl_union_inter_add).
+                ** apply H7.
+                ** apply H9.
+        + simpl in *. 
+        specialize (IHn1 G1 G2 (a :: D1) (p0 :: D2 ) H4) as H6. destruct H6 as [c0 [m1 [m2 [H6 [H6' H7]]]]].
+        specialize  (IHn2 G1 G2 (b :: D1) (p0 :: D2 ) H5) as H8. destruct H8 as [c1 [m1' [m2' [H8 [H8' H9]]]]].
+        exists (c0 ∨ c1), 
+        (☉ ((☉ ☉ m1) ≍ (☉ ☉ m1'))),
+        (m2 ≍ m2'). repeat split.
+            * apply (LKrE G1 [] D1 (a ∧ b) (c0 ∨ c1) ((☉ ☉ m1) ≍ (☉ ☉ m1'))).
+            simpl. constructor 8.
+                ** apply (LKrE G1 [] D1 (c0 ∨ c1) (a) (☉ m1)).
+                simpl. constructor 11. apply H6.
+                ** apply (LKrE G1 [] D1 (c0 ∨ c1) (b) (☉ m1')).
+                simpl. constructor 12. apply H8.
+            * constructor 13.
+                ** apply H6'.
+                ** apply H8'.
+            * simpl. simpl in H9. simpl in H7.
+            apply (incl_union_inter_add).
+                ** apply H7.
+                ** apply H9.
+    -
 
 Admitted.

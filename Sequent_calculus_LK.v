@@ -116,6 +116,126 @@ where "G ⇒ p >< n" := (LK n G p).
 
 
 
+Lemma LKr_app_list: forall G D D' m,
+G ⇒ D >< m -> (exists m', G ⇒ D' ++ D >< m').
+Proof.
+    intros. induction D'.
+    - exists m. simpl. apply H.
+    - destruct IHD' as [m' H']. exists (☉ m').
+    rewrite <- app_comm_cons. constructor 2. apply H'.
+Qed.
+
+Lemma app_cons: forall {X : Type}(l l' : list X) (a : X),
+l ++ a :: l' = l ++ [a] ++ l'.
+Proof.
+    intros. induction l.
+    - simpl. reflexivity.
+    - simpl. rewrite IHl. reflexivity.
+Qed.
+Lemma LKr_partition_mid_atom_r: forall G D D' a m,
+G ⇒ D ++ a :: D' >< m -> (exists m', G ⇒ D ++ D' ++ a >< m').
+Proof.
+    intros. generalize dependent D. generalize dependent m. induction D'.
+    - intros. simpl. exists m. apply H.
+    - intros. specialize (IHD' (☉ m) (D ++ [a0])) as H'.
+    apply (LKrE G D D' a a0 m) in H.
+    rewrite app_cons in H. rewrite app_assoc in H.
+    apply H' in H as H0. destruct H0 as [m' H0].
+    rewrite app_assoc in H0. rewrite <- (app_assoc D [a0] D') in H0.
+    rewrite <- app_cons in H0. rewrite <- app_assoc in H0.
+    exists m'. apply H0.
+Qed.
+
+Lemma LKr_partition_mid_atom_l: forall G D D' a m,
+G ⇒ D ++ a :: D' >< m -> (exists m', G ⇒ a :: D ++ D' >< m').
+Proof.
+    intros. generalize dependent D'. generalize dependent m.
+    induction D using rev_ind.
+    - intros. exists m. subst. simpl. simpl in H. apply H.
+    - intros. rewrite <- app_assoc in H. rewrite <- app_cons in H.
+    apply (LKrE G D D' x a m) in H.
+    specialize (IHD (☉ m) (x :: D') H) as H'. destruct H' as [m' H'].
+    exists m'. rewrite <- app_assoc. rewrite <- app_cons. apply H'.
+Qed.
+
+Lemma LKr_partition_mid_l: forall G D D' D'' m,
+G ⇒ D'' ++ D ++ D' >< m -> (exists m', G ⇒ D ++ D'' ++ D' >< m').
+Proof.
+    intros. 
+    generalize dependent D'.
+    generalize dependent D''.
+    induction D.
+    - intros. simpl. simpl in H. exists m. apply H. 
+    - intros. rewrite app_assoc in H. rewrite app_cons in H.
+    rewrite app_assoc in H. rewrite <- app_assoc in H.
+    specialize (IHD (D'' ++ a :: []) D' H) as H'. destruct H' as [m' H'].
+    rewrite <- app_assoc in H'. rewrite <- app_cons in H'. rewrite app_assoc in H'.
+    apply (LKr_partition_mid_atom_l) in H'.
+    destruct H' as [m'' H']. rewrite <- app_assoc in H'.
+    exists m''.
+    rewrite <- (app_nil_l (a :: D)). rewrite app_cons. simpl. apply H'.
+Qed.
+
+Lemma LKr_partition_mid_r: forall G D D' D'' m,
+G ⇒ D'' ++ D ++ D' >< m -> (exists m', G ⇒ D'' ++ D' ++ D >< m').
+Proof.
+    intros. 
+    generalize dependent D'.
+    generalize dependent D''.
+    induction D using rev_ind.
+    - intros. rewrite app_nil_r. simpl in H. exists m. apply H. 
+    - intros. rewrite <- app_assoc in H. 
+    specialize (IHD D'' ([x] ++ D') H) as H'. destruct H' as [m' H'].
+    rewrite <- app_assoc in H'. apply LKr_partition_mid_atom_r in H'.
+    destruct H' as [m'' H'].
+    exists m''. rewrite <- app_assoc in H'. apply H'.
+Qed.
+Lemma LK_cons_app: forall G D D' m,
+ G ⇒ D' ++ D >< m -> (exists m', G ⇒ D ++ D' >< m').
+Proof.
+        intros.
+        rewrite <- app_nil_l in H. apply LKr_partition_mid_r in H. apply H.
+Qed.
+Lemma LKr_weak_l: forall G D a m,
+ G ⇒ D >< m -> (exists m', G ⇒ D ++ [a] >< m').
+Proof.
+        intros. 
+        apply (LKrW G D a m) in H. 
+        rewrite <- app_nil_l in H. rewrite app_cons in H.
+        apply LKr_partition_mid_r in H. destruct H as [m' H]. simpl in H.
+        exists m'. apply H.
+Qed.
+
+
+Lemma LKl_app_list: forall G G' D m,
+G ⇒ D >< m -> (exists m', G' ++ G ⇒ D >< m').
+Proof.
+    Admitted.
+Lemma LKl_partition_mid_atom_r: forall G G' D a m,
+G ++ a :: G' ⇒ D  >< m -> (exists m', G ++ G' ++ a ⇒ D  >< m').
+Proof.
+    Admitted.
+
+Lemma LKl_partition_mid_atom_l: forall G G' D a m,
+G ++ a :: G' ⇒ D >< m -> (exists m', a :: G ++ G' ⇒ D >< m').
+Proof.
+    Admitted.
+
+Lemma LKl_partition_mid_l: forall G G' G'' D m,
+G'' ++ G ++ G' ⇒ D >< m -> (exists m', G ++ G'' ++ G' ⇒ D  >< m').
+Proof.
+    Admitted.
+
+Lemma LKl_partition_mid_r: forall G G' G'' D m,
+G'' ++ G ++ G' ⇒ D >< m -> (exists m', G'' ++ G' ++ G ⇒ D >< m').
+Proof.
+    Admitted.
+Lemma LKl_cons_app: forall G G' D m,
+ G' ++ G ⇒ D >< m -> (exists m', G ++ G' ⇒ D >< m').
+Proof.
+    Admitted.
+
+
 Lemma mp : forall p q : prop, exists n, (p ⊃ q)::p ⇒ q >< n.
 Proof.
   intros p q.

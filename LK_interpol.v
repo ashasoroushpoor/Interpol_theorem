@@ -24,10 +24,33 @@ Fixpoint In_list_prop (x : atom)(l : list prop) : bool :=
     | nil => false
     | p :: l' => (In_prop x p) || (In_list_prop x l')
     end.
-(* Lemma list_dest_app: forall {X : Type}(l : list X),
-l = nil \/ (exists (x: X) (l' : list X), l = l' ++ [x]).
-Admitted. *)
-Search (_ ∩ _).
+Lemma exchg_partition: forall {X : Type} (D D' D1 D2 : list X) (a b : X),
+D ++ a :: b :: D' = D1 ++ D2 ->
+(
+    ( D2 = D ++ a :: b :: D' /\ D1 = [])
+    \/ (exists D3, D2 = D3 ++ a :: b :: D' /\ D = D1 ++ D3)
+    \/ (D1 = D /\ D2 = a :: b :: D')
+    \/ (D1 = D ++ [a]) /\ D2 = b :: D'
+    \/ (D1 = D ++ [a; b] /\ D2 = D')
+    \/ (exists D3, D1 = D ++ a :: b :: D3 /\ D' = D3 ++ D2)
+    \/ (D1 = D ++ a :: b :: D' /\ D2 = [])
+).
+Proof.
+    Admitted.
+
+Lemma app_cons_2: forall {X: Type} (l : list X) (a : X),
+[a] ++ l = a :: l.
+Proof.
+    intros. simpl. reflexivity.
+Qed.
+
+(* Theorem x: forall (X Y Z : Prop), X \/ (Y \/ Z) -> (X \/ Y) \/ Z
+.
+Proof.
+    intros. destruct H as [x | [y | z]].
+    -
+Qed. *)
+
 Theorem LK_Interpol: forall n (G1 G2 D1 D2 : list prop),
 G1 ++ G2 ⇒ D1 ++ D2 >< n -> 
 (exists (c : prop) m1 m2, G1 ⇒ c :: D1 >< m1 /\ c :: G2 ⇒ D2 >< m2
@@ -214,25 +237,91 @@ G1 ++ G2 ⇒ D1 ++ D2 >< n ->
             rewrite H0. rewrite Bool.orb_true_r. reflexivity.
             * specialize (IH3 x) as H'. apply H' in H0. destruct H0.
             apply H3. *)
-    - admit.  
-     (* specialize (IHn G1 G2 D (a :: b :: D') H3) as H'.
-    destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-    destruct D2 as [ | a' D2']; try destruct D2'; simpl in *; try discriminate.
-        + apply (app_inv_head ) in H1. inversion H1.
-        + inversion H1.
-    specialize (IHn G1 G2 D1 D2 H2) as H'.
-    simpl in H1. inversion H1. rewrite  H6 in H3.
-        specialize (IHn G1 G2 D1 D2 H3) as H'.
-        destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-        exists c, (S (S m1)) , (S m2). repeat split.
-            * apply (LKrE G1 [] D1 p c (S m1)).
-             apply (LKrW G1 (c :: D1) p m1).
-             apply IH1.
-             * apply (LKrW (c :: G2) D1 p).
-             apply IH2.
-             * specialize (IH3 x) as H'. apply H' in H4. destruct H4. apply H4.
-             * specialize (IH3 x) as H'. apply H' in H4. destruct H4. simpl in H5.
-             unfold In_list_prop. rewrite H7. rewrite Bool.orb_true_r. reflexivity. *)
+    - apply exchg_partition in H1. 
+    destruct H1 as [[H1 H1'] | [[D3 [H1 H1']] | [[H1 H1'] | [[H1 H1']| [[H1 H1'] | [[D3 [H1 H1']] | [H1 H1'] ]]]]]].
+        --  
+        specialize (IHn G1 G2 [] (D ++ a :: b :: D') H3) as H'.
+        destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
+        exists c,m1 ,(☉ m2). repeat split.
+            + subst. apply H6.
+            + subst. constructor  4. apply H6'.
+            + simpl. rewrite (atoms_list_app D (b :: a :: D')).
+            simpl. rewrite (union_assoc (^V b) (^V a) (atoms_of_list D')).
+            rewrite (union_comm (^V b) (^V a) ).
+            simpl in H7. rewrite (atoms_list_app D (a :: b :: D')) in H7. 
+            simpl in H7. rewrite (union_assoc (^V a) (^V b) (atoms_of_list D')) in H7. apply H7.
+        -- rewrite H1' in H3. rewrite <- app_assoc in H3.
+        specialize (IHn G1 G2 D1 (D3 ++ a :: b :: D') H3) as H'.
+        destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
+        exists c, m1, (☉ m2). repeat split.
+            + apply H6.
+            + rewrite H1. constructor 4. apply H6'.
+            + rewrite (atoms_list_app D (b :: a :: D')). 
+            rewrite H1'. rewrite (atoms_list_app D1 D3).
+            rewrite <- union_assoc. simpl. rewrite (union_assoc (^V b) (^V a) (atoms_of_list D')).
+            rewrite (union_comm (^V b) (^V a) ).
+            rewrite (atoms_list_app D1  (D3 ++ a :: b :: D')) in H7.
+            rewrite (atoms_list_app D3 (a :: b :: D')) in H7. 
+            simpl in H7. rewrite (union_assoc (^V a) (^V b) (atoms_of_list D')) in H7. apply H7.
+        --
+        specialize (IHn G1 G2 D (a :: b :: D') H3) as H'.
+        destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
+        exists c, m1, (☉ m2). repeat split.
+            + rewrite H1. apply H6.
+            + rewrite H1'. rewrite <- app_nil_l. constructor 4. simpl. apply H6'.
+            + admit.
+        -- rewrite app_cons in H3. rewrite app_cons in H3. 
+        rewrite app_assoc in H3. rewrite app_assoc in H3. rewrite <- (app_assoc D [a] [b]) in H3.
+        specialize (IHn G1 G2 (D ++ [a] ++ [b]) (D') H3) as H'.
+        destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
+        rewrite app_comm_cons in H6.
+        apply LKr_partition_mid_l in H6. destruct H6 as [m' H6].
+        rewrite app_assoc in H6. rewrite (app_cons [a] D c) in H6.
+        rewrite <- app_assoc in H6.
+        simpl in H6.
+        apply (LKr2O G1 (c :: D ++ [b]) c a m') in H6.
+        apply (LKrE G1 [] (D ++ [b]) (c ∨ a) c (☉ m')) in H6.
+        simpl in H6.
+        apply (LKr1O G1 (c ∨ a :: D ++ [b]) c a (☉ (☉ m'))) in H6.
+        apply (LKrC G1 (D ++ [b]) (c ∨ a) (☉ (☉ (☉ m')))) in H6.
+
+        specialize (LKA a) as H6''.
+        specialize (LKl_app_list [a] G2 [a] leaf H6'') as H8.
+        destruct H8 as [m3 H8].
+        apply LKl_cons_app in H8. destruct H8 as [m'' H8].
+
+        apply (LKrW (c :: G2) (D') a m2) in H6'.
+        apply (LKr_app_list ([a] ++ G2) [a] D' m'') in H8.
+        destruct H8 as [m4 H8]. apply (LK_cons_app ([a] ++ G2) [a] D' m4) in H8.
+        destruct H8 as [m5 H8]. simpl in H8.
+        specialize (LKlO G2 (a :: D') c a (☉ m2) m5 H6' H8) as H9.
+        exists (c ∨ a) , (☉ (☉ (☉ (☉ m')))), (☉ m2 ≍ m5). 
+        repeat split.
+            + rewrite H1. apply H6.
+            + rewrite H1'. apply H9.
+            + admit.
+        -- replace (D ++ a :: b :: D') with ((D ++ a :: b) ++ D') in H3. 
+        specialize (IHn G1 G2 (D ++ a :: b) (D') H3) as H'.
+        destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
+        exists c, (☉ m1), m2. repeat split.
+            + rewrite H1. apply (LKrE G1 (c::D) [] a b m1). simpl. apply H6.
+            + rewrite H1'. apply H6'.
+            + admit.
+            + rewrite <- app_assoc. simpl. reflexivity.
+        -- rewrite H1' in H3. rewrite app_comm_cons in H3. rewrite app_comm_cons in H3. rewrite app_assoc in H3.
+        specialize (IHn G1 G2 (D ++ a :: b :: D3) (D2) H3) as H'.
+        destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
+        exists c, (☉ m1), m2. repeat split.
+            + subst. apply (LKrE G1 (c::D) D3 a b m1). simpl. apply H6.
+            +subst. apply H6'.
+            + admit.
+        -- rewrite <- app_nil_r in H3.
+        specialize (IHn G1 G2 (D ++ a :: b :: D') [] H3) as H'.
+        destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
+        exists c, (☉ m1), m2. repeat split.
+            + subst. apply (LKrE G1 (c::D) D' a b m1). apply H6.
+            + subst. apply H6'.
+            + admit.
     - admit.
     -admit.
     - admit.

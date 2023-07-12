@@ -47,6 +47,15 @@ Fixpoint weight_list (l : list prop) : nat :=
     | nil => 0
     | p :: l' => (weight p) + (weight_list l')
     end.
+
+Lemma atoms_list_app: forall l l',
+atoms_of_list(l ++ l') = atoms_of_list(l) ∪ atoms_of_list(l').
+Proof.
+  intros. induction l.
+    - simpl. reflexivity.
+    - simpl. rewrite IHl. rewrite union_assoc.
+    reflexivity.
+Qed.
 (* 
 Require Import BinNat BinNatDef BinPos BinPosDef.
 Fixpoint partition {T : Type} (l : list T) (mask : N) : list T :=

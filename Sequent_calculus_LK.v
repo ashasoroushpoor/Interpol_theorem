@@ -210,31 +210,85 @@ Qed.
 Lemma LKl_app_list: forall G G' D m,
 G ⇒ D >< m -> (exists m', G' ++ G ⇒ D >< m').
 Proof.
-    Admitted.
+    intros. induction G'.
+    - exists m. auto.
+    - destruct IHG' as [m' H']. exists (☉ m'). 
+    rewrite <- app_comm_cons. constructor 3. apply H'.
+Qed.
 Lemma LKl_partition_mid_atom_r: forall G G' D a m,
 G ++ a :: G' ⇒ D  >< m -> (exists m', G ++ G' ++ a ⇒ D  >< m').
 Proof.
-    Admitted.
+    intros. generalize dependent G. generalize dependent m. induction G'.
+    - intros. simpl. exists m. apply H.
+    - intros. specialize (IHG' (☉ m) (G ++ [a0])) as H'.
+    apply (LKlE G G' D a a0 m) in H.
+    rewrite app_cons in H. rewrite app_assoc in H.
+    apply H' in H as H0. destruct H0 as [m' H0].
+    rewrite app_assoc in H0. rewrite <- (app_assoc G [a0] G') in H0.
+    rewrite <- app_cons in H0. rewrite <- app_assoc in H0.
+    exists m'. apply H0.
+Qed.
 
 Lemma LKl_partition_mid_atom_l: forall G G' D a m,
 G ++ a :: G' ⇒ D >< m -> (exists m', a :: G ++ G' ⇒ D >< m').
 Proof.
-    Admitted.
+    intros. generalize dependent G'. generalize dependent m.
+    induction G using rev_ind.
+    - intros. exists m. subst. simpl. simpl in H. apply H.
+    - intros. rewrite <- app_assoc in H. rewrite <- app_cons in H.
+    apply (LKlE G G' D x a m) in H.
+    specialize (IHG (☉ m) (x :: G') H) as H'. destruct H' as [m' H'].
+    exists m'. rewrite <- app_assoc. rewrite <- app_cons. apply H'.
+Qed.
 
 Lemma LKl_partition_mid_l: forall G G' G'' D m,
 G'' ++ G ++ G' ⇒ D >< m -> (exists m', G ++ G'' ++ G' ⇒ D  >< m').
 Proof.
-    Admitted.
+    intros. 
+    generalize dependent G'.
+    generalize dependent G''.
+    induction G.
+    - intros. simpl. simpl in H. exists m. apply H. 
+    - intros. rewrite app_assoc in H. rewrite app_cons in H.
+    rewrite app_assoc in H. rewrite <- app_assoc in H.
+    specialize (IHG (G'' ++ a :: []) G' H) as H'. destruct H' as [m' H'].
+    rewrite <- app_assoc in H'. rewrite <- app_cons in H'. rewrite app_assoc in H'.
+    apply (LKl_partition_mid_atom_l) in H'.
+    destruct H' as [m'' H']. rewrite <- app_assoc in H'.
+    exists m''.
+    rewrite <- (app_nil_l (a :: G)). rewrite app_cons. simpl. apply H'.
+Qed.
 
 Lemma LKl_partition_mid_r: forall G G' G'' D m,
 G'' ++ G ++ G' ⇒ D >< m -> (exists m', G'' ++ G' ++ G ⇒ D >< m').
 Proof.
-    Admitted.
+    intros. 
+    generalize dependent G'.
+    generalize dependent G''.
+    induction G using rev_ind.
+    - intros. rewrite app_nil_r. simpl in H. exists m. apply H. 
+    - intros. rewrite <- app_assoc in H. 
+    specialize (IHG G'' ([x] ++ G') H) as H'. destruct H' as [m' H'].
+    rewrite <- app_assoc in H'. apply LKl_partition_mid_atom_r in H'.
+    destruct H' as [m'' H'].
+    exists m''. rewrite <- app_assoc in H'. apply H'.
+Qed.
 Lemma LKl_cons_app: forall G G' D m,
  G' ++ G ⇒ D >< m -> (exists m', G ++ G' ⇒ D >< m').
 Proof.
-    Admitted.
+    intros.
+        rewrite <- (app_nil_l (G' ++ G)) in H. apply LKl_partition_mid_r in H. apply H.
+Qed.
 
+Lemma LKl_weak_l: forall G D a m,
+ G ⇒ D >< m -> (exists m', G ++ [a]⇒ D  >< m').
+Proof.
+        intros. 
+        apply (LKlW G D a m) in H. 
+        rewrite <- (app_nil_l (a::G)) in H. rewrite app_cons in H.
+        apply LKl_partition_mid_r in H. destruct H as [m' H]. simpl in H.
+        exists m'. apply H.
+Qed.
 
 Lemma mp : forall p q : prop, exists n, (p ⊃ q)::p ⇒ q >< n.
 Proof.

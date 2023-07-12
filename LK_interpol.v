@@ -24,6 +24,7 @@ Fixpoint In_list_prop (x : atom)(l : list prop) : bool :=
     | nil => false
     | p :: l' => (In_prop x p) || (In_list_prop x l')
     end.
+
 Lemma exchg_partition: forall {X : Type} (D D' D1 D2 : list X) (a b : X),
 D ++ a :: b :: D' = D1 ++ D2 ->
 (
@@ -36,6 +37,14 @@ D ++ a :: b :: D' = D1 ++ D2 ->
     \/ (D1 = D ++ a :: b :: D' /\ D2 = [])
 ).
 Proof.
+    (* intros. 
+    generalize dependent D2.
+    induction D1.
+    - intros. left. split.
+        + symmetry. simpl in H. apply H.
+        + reflexivity.
+    - destruct IHD1 as [[H1 H1'] | [[D3 [H1 H1']] | [[H1 H1'] | [[H1 H1']| [[H1 H1'] | [[D3 [H1 H1']] | [H1 H1'] ]]]]]].
+        + simpl in H. *)
     Admitted.
 
 Lemma app_cons_2: forall {X: Type} (l : list X) (a : X),

@@ -56,6 +56,16 @@ Proof.
     - simpl. rewrite IHl. rewrite union_assoc.
     reflexivity.
 Qed.
+
+Lemma exchg_atoms_of_list: forall D D' a b,
+atoms_of_list (D ++ a :: b :: D') = atoms_of_list (D ++ b :: a :: D').
+Proof.
+    intros. induction D.
+        - simpl. rewrite union_assoc. 
+        rewrite (union_comm (^V a) (^V b)). rewrite union_assoc.
+        reflexivity.
+        - simpl. rewrite IHD. reflexivity.
+Qed.
 (* 
 Require Import BinNat BinNatDef BinPos BinPosDef.
 Fixpoint partition {T : Type} (l : list T) (mask : N) : list T :=

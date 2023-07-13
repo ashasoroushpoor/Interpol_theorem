@@ -68,184 +68,82 @@ G1 ++ G2 ⇒ D1 ++ D2 >< n ->
 /\ (atoms_of c) ⊆ ( (atoms_of_list (G1 ++ G2)) ∩ (atoms_of_list (D1 ++ D2)))).
 
  induction n; intros G1 G2 D1 D2 H; inversion H.
-    - admit.
-    (* destruct G1, G2, D1, D2.
-        + discriminate.
-        + discriminate.
-        + discriminate.
-        + discriminate.
-        + discriminate.
-        + inversion H0. inversion H1.
-        exists (p ∨ ¬ p), 5, 1. repeat split.
-            * apply (LKrC [] [] (p ∨ ¬ p) 4).
-            apply (LKr1O [] [p ∨ ¬ p] p (¬ p) 3).
-            apply (LKrE [] [] [] (p ∨ ¬ p) (p) 2).
-            simpl.
-            apply (LKr2O [] [p] p (¬ p) 1).
-            apply (LKrN [] [p] (p) 0).
-            apply (LKA p ).
-            * rewrite <- H3. rewrite <- H5. 
-            apply (LKlW [p] [p] (p ∨ ¬ p) 0).
-            apply (LKA p).
-            * rewrite <- H3.
-            unfold In_prop in H2. simpl in H2.
-            rewrite Bool.orb_false_r in H2.
-            rewrite Bool.orb_diag in H2.
-            simpl.
-            rewrite Bool.orb_false_r.
-            apply H2.
-            * rewrite <- H3.
-            unfold In_prop in H2. simpl in H2.
-            rewrite Bool.orb_false_r in H2.
-            rewrite Bool.orb_diag in H2.
-            simpl.
-            rewrite Bool.orb_false_r.
-            apply H2.
-        + inversion H0. inversion H1. rewrite app_nil_r in H6.
-        exists (¬ p), 1, 1. repeat split.
-            * rewrite <- H5. rewrite <- H6. simpl. 
-            apply (LKrN [] [p] p 0).
-            apply (LKA p).
-            * rewrite <- H3.
-            apply (LKlN [p] [] p 0).
-            apply (LKA p).
-            * simpl.
-            rewrite Bool.orb_false_r.
-            rewrite <- H3.
-            unfold In_prop in H2. simpl in H2. rewrite Bool.orb_false_r in H2.
-            apply H2.
-            * simpl.
-            rewrite Bool.orb_false_r.
-            rewrite <- H3.
-            unfold In_prop in H2. simpl in H2. rewrite Bool.orb_false_r in H2.
-            apply H2.
-        + inversion H1. destruct D1.
-            * inversion H4.
-            * inversion H4.
-        + discriminate.
-        + inversion H0. inversion H1. rewrite app_nil_r in H4.
-        exists p, 0, 0. repeat split.
-            * rewrite <- H3. rewrite <- H4. apply (LKA p).
-            * rewrite <- H5. apply (LKA p).
-            * rewrite <- H3.
-            simpl.
-            rewrite Bool.orb_false_r.
-            apply H2.
-            * rewrite <- H3.
-            simpl.
-            rewrite Bool.orb_false_r.
-            apply H2.
-        + inversion H0. inversion H1. rewrite app_nil_r in H4. rewrite app_nil_r in H6.
-        exists (p ∧ ¬ p), 1, 5. repeat split.
-            * rewrite <- H5. rewrite <- H3. rewrite <- H4. rewrite <- H6.
-            apply (LKrW [p] [p] (p ∧ ¬ p) 0).
-            apply (LKA p).
-            * apply (LKlC [] [] (p ∧ ¬ p) 4).
-            apply (LKl1A [p ∧ ¬ p] [] p (¬ p) 3).
-            apply (LKlE [] [] [] (p ∧ ¬ p) (p) 2). simpl.
-            apply (LKl2A [p] [] p (¬ p) 1).
-            apply (LKlN [p] [] (p) 0).
-            apply (LKA p).
-            * rewrite <- H3.
-            unfold In_prop in H2. simpl in H2.
-                rewrite Bool.orb_false_r in H2.
-                rewrite Bool.orb_diag in H2.
-                simpl.
-                rewrite Bool.orb_false_r.
-                apply H2.
-            * rewrite <- H3.
-            unfold In_prop in H2. simpl in H2.
-                rewrite Bool.orb_false_r in H2.
-                rewrite Bool.orb_diag in H2.
-                simpl.
-                rewrite Bool.orb_false_r.
-                apply H2.
-        + inversion H1. destruct D1.
-            *inversion H4.
-            * inversion H4.
-        + inversion H0. destruct G1.
-            * inversion H4.
-            * inversion H4.
-        + inversion H0. destruct G1.
-            * inversion H4.
-            * inversion H4.
-        + inversion H0. destruct G1.
-            * inversion H4.
-            * inversion H4.
-        + inversion H0. destruct G1.
-            * inversion H4.
-            * inversion H4. *)
-    - admit.
-    (* destruct D1, D2; simpl in *; try discriminate; try inversion H1; subst; simpl in *. 
-        + 
-        rewrite <- app_nil_l in H3.
+    -  destruct G1, G2, D1, D2; try discriminate; simpl in *; inversion H0; inversion H1; subst; try (rewrite app_nil_r in *).
+        + exists (p1 ∨ ¬ p1), (☉ (☉ (☉ (☉ (☉ leaf))))), (☉ leaf). repeat split.
+            * constructor 6. constructor 11. 
+            apply (LKrE [] [] [] (p1 ∨ ¬ p1) (p1) (☉ (☉ leaf))). simpl.
+            constructor 12. constructor 14. constructor 1.
+            * constructor 3. constructor 1.
+            * simpl. rewrite union_idr. 
+            rewrite union_refl. rewrite intersection_refl.
+            apply incl_reflexive.
+        + subst.
+        exists (¬ p1), (☉ leaf), (☉ leaf). repeat split.
+            * constructor 14. apply H.
+            * constructor 15. apply H.
+            * simpl. rewrite union_idr. rewrite intersection_refl.
+            apply incl_reflexive.
+        + destruct D1; inversion H6.
+        + subst. exists p1, leaf, leaf. repeat split.
+            * constructor 1.
+            * constructor 1.
+            * rewrite union_idr. rewrite intersection_refl.
+            apply incl_reflexive.
+        + subst; simpl in *.
+        exists (p1 ∧ ¬ p1), (☉ leaf), (☉ (☉ (☉ (☉ (☉ leaf))))). repeat split.
+            * constructor 2. constructor 1.
+            * constructor 7. constructor 9.
+            apply (LKlE [] [] [] (p1 ∧ ¬ p1) (p1) (☉ (☉ leaf))). simpl.
+            constructor 10. constructor 15. constructor 1.
+            * simpl. rewrite union_idr. 
+            rewrite union_refl. rewrite intersection_refl.
+            apply incl_reflexive.
+        + destruct D1; inversion H6.
+        + destruct G1; inversion H4.
+        + destruct G1; inversion H4.
+        + destruct G1; inversion H4.
+    - destruct D1, D2; simpl in *; try discriminate; try inversion H1; subst; simpl in *.
+        + rewrite <- app_nil_l in H3.
         specialize (IHn G1 G2 [] (D2) H3) as H'.
         destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-        exists c, m1, (S m2). repeat split.
+        exists c, m1, (☉ m2). repeat split.
             * apply IH1.
-            * apply (LKrW (c :: G2) D2 p m2). apply IH2.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0. apply H0.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0. rewrite app_nil_l in H2.
-            rewrite H2. rewrite Bool.orb_true_r. reflexivity.
-        + 
-        specialize (IHn G1 G2 D1 [] H3) as H'.
+            * constructor 2. apply IH2.
+            * apply incl_union_inter_absorb. simpl in IH3. auto.
+        + specialize (IHn G1 G2 D1 [] H3) as H'.
         destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-        exists c, (S (S m1)), m2. repeat split.
-            * apply (LKrE G1 [] D1 p c (S m1)). simpl.
-            apply (LKrW G1 (c :: D1) p m1).
-            apply IH1.
+        exists c, (☉ (☉ m1)), m2. repeat split.
+            * apply (LKrE G1 [] D1 p c (☉ m1)). simpl.
+            constructor 2. apply IH1.
             * apply IH2.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0. apply H0.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0.
-            rewrite H2. rewrite Bool.orb_true_r. reflexivity.
-        +
-        specialize (IHn G1 G2 D1 (p0 :: D2) H3) as H'.
+            * apply incl_union_inter_absorb. auto.
+        + specialize (IHn G1 G2 D1 (p0 :: D2) H3) as H'.
         destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-        exists c, (S (S m1)), m2. repeat split.
-            * apply (LKrE G1 [] D1 p c (S m1)). simpl.
-            apply (LKrW G1 (c :: D1) p m1).
-            apply IH1.
+        exists c, (☉ (☉ m1)), m2. repeat split.
+            * apply (LKrE G1 [] D1 p c (☉ m1)).
+            constructor 2. apply IH1.
             * apply IH2.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0. apply H0.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0.
-            rewrite H2. rewrite Bool.orb_true_r. reflexivity. *)
-    - admit.
-    (* destruct G1, G2; simpl in *; try discriminate; try inversion H1; subst; simpl in *. 
-        +
-        (* rewrite <- app_nil_l in H3. *)
-        specialize (IHn [] G2 D1 (D2) H2) as H'.
+            * apply incl_union_inter_absorb. auto.
+    - destruct G1, G2; simpl in *; try discriminate; try inversion H1; subst; simpl in *. 
+        + specialize (IHn [] G2 D1 (D2) H2) as H'.
         destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-        exists c, m1, (S(S m2)). repeat split.
+        exists c, m1, (☉ (☉ m2)). repeat split.
             * apply IH1.
-            * apply (LKlE [] G2 D2 p c (S m2)). simpl.
-            apply (LKlW (c :: G2) D2 p m2).
-            apply IH2.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0. 
-            simpl in H0. rewrite H0. rewrite Bool.orb_true_r. reflexivity.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0.
-            apply H3.
-        + 
-        specialize (IHn G1 [] D1 (D2) H2) as H'.
+            * apply (LKlE [] G2 D2 p c (☉ m2)). simpl.
+            constructor 3. apply IH2.
+            * apply incl_union_absorb_inter. auto.
+        + specialize (IHn G1 [] D1 (D2) H2) as H'.
         destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-        exists c, (S m1), m2. repeat split.
-            * apply (LKlW G1 (c :: D1) p m1).
-            apply IH1.
+        exists c, (☉ m1), m2. repeat split.
+            * constructor 3. apply IH1.
             * apply IH2.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0. 
-            rewrite H0. rewrite Bool.orb_true_r. reflexivity.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0.
-            apply H3.
-        +
-        specialize (IHn G1 (p0 :: G2) D1 D2 H2) as H'.
+            * apply incl_union_absorb_inter. auto.
+        + specialize (IHn G1 (p0 :: G2) D1 D2 H2) as H'.
         destruct H' as [c [m1 [m2 [IH1 [IH2 IH3]]]]].
-        exists c, (S m1), m2. repeat split.
-            * apply (LKlW G1 (c :: D1) p m1).
-            apply IH1.
+        exists c, (☉ m1), m2. repeat split.
+            * constructor 3. apply IH1.
             * apply IH2.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0. 
-            rewrite H0. rewrite Bool.orb_true_r. reflexivity.
-            * specialize (IH3 x) as H'. apply H' in H0. destruct H0.
-            apply H3. *)
+            * apply incl_union_absorb_inter. auto.
     - apply exchg_partition in H1. 
     destruct H1 as [[H1 H1'] | [[D3 [H1 H1']] | [[H1 H1'] | [[H1 H1']| [[H1 H1'] | [[D3 [H1 H1']] | [H1 H1'] ]]]]]].
         --  
@@ -308,14 +206,19 @@ G1 ++ G2 ⇒ D1 ++ D2 >< n ->
         repeat split.
             + rewrite H1. apply H6.
             + rewrite H1'. apply H9.
-            + admit.
+            + simpl. admit.
+            (* rewrite exchg_atoms_of_list.
+            replace (D ++ a :: b :: D') with ((D ++ [a] ++ [b]) ++
+            D').
+            apply H7. *)
         -- replace (D ++ a :: b :: D') with ((D ++ a :: b) ++ D') in H3. 
         specialize (IHn G1 G2 (D ++ a :: b) (D') H3) as H'.
         destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
         exists c, (☉ m1), m2. repeat split.
             + rewrite H1. apply (LKrE G1 (c::D) [] a b m1). simpl. apply H6.
             + rewrite H1'. apply H6'.
-            + admit.
+            + rewrite exchg_atoms_of_list. 
+            rewrite <- app_assoc in H7. simpl in H7. auto.
             + rewrite <- app_assoc. simpl. reflexivity.
         -- rewrite H1' in H3. rewrite app_comm_cons in H3. rewrite app_comm_cons in H3. rewrite app_assoc in H3.
         specialize (IHn G1 G2 (D ++ a :: b :: D3) (D2) H3) as H'.
@@ -323,14 +226,18 @@ G1 ++ G2 ⇒ D1 ++ D2 >< n ->
         exists c, (☉ m1), m2. repeat split.
             + subst. apply (LKrE G1 (c::D) D3 a b m1). simpl. apply H6.
             +subst. apply H6'.
-            + admit.
+            + rewrite exchg_atoms_of_list.
+            replace ((D ++ a :: b :: D3) ++ D2) with (D ++ a :: b :: D') in H7.
+            auto.
+            {rewrite <- app_assoc. simpl. rewrite H1'. reflexivity. }
         -- rewrite <- app_nil_r in H3.
         specialize (IHn G1 G2 (D ++ a :: b :: D') [] H3) as H'.
         destruct H' as [c [m1 [m2 [H6 [H6' H7]]]]].
         exists c, (☉ m1), m2. repeat split.
             + subst. apply (LKrE G1 (c::D) D' a b m1). apply H6.
             + subst. apply H6'.
-            + admit.
+            + rewrite exchg_atoms_of_list. rewrite app_nil_r in H7.
+            auto.
     - admit.
     -admit.
     - admit.
@@ -391,6 +298,7 @@ G1 ++ G2 ⇒ D1 ++ D2 >< n ->
             apply (incl_union_inter_add).
                 ** apply H7.
                 ** apply H9.
-    -
+    - admit.
+    - admit.
 
 Admitted.

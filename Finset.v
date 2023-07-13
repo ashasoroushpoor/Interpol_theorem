@@ -786,6 +786,8 @@ Qed.
 
 
 (*added section by asha*)
+Lemma union_refl: forall s, s ∪ s = s. Proof. intros. apply BinNat.N.lor_diag. Qed.
+Lemma intersection_refl: forall s, s ∩ s = s. Proof. intros. apply BinNat.N.land_diag. Qed.
 
 Lemma incl_union_inter_absorb : forall a b c d, a ⊆ (b ∩ c) -> a ⊆ (b ∩ (d ∪ c)).
 Proof.
@@ -798,6 +800,18 @@ Proof.
     - specialize (intersection_mem n b c H') as H1.
     rewrite union_comm.
     apply mem_union. apply H1.
+Qed.
+
+Lemma incl_union_absorb_inter : forall a b c d, a ⊆ (b ∩ c) -> a ⊆ d ∪ b ∩ c.
+Proof.
+  intros.
+  apply mem_incl. intros. rewrite mem_incl in H.
+  specialize (H n H0) as H'. 
+  apply mem_intersection. split.
+    - rewrite intersection_comm in H'. 
+    specialize (intersection_mem n c b H') as H1. 
+    rewrite union_comm. apply mem_union. apply H1.
+    - specialize (intersection_mem n b c H') as H1. auto.
 Qed.
 
 Lemma incl_union_inter_add:
@@ -822,6 +836,7 @@ apply unioun_mem in H1. destruct H1.
     rewrite <- union_assoc. rewrite union_comm.
     apply mem_union. apply H'.
 Qed.
+
 (*        
 Check 1~0~1~0~1.
 Compute (∅ ⊆ ∅).

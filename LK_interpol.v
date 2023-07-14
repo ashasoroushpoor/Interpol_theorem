@@ -59,8 +59,31 @@ Proof.
     intros. destruct H as [x | [y | z]].
     -
 Qed. *)
-
-Theorem LK_Interpol: forall n (G1 G2 D1 D2 : list prop),
+Lemma intersection_mem_double: forall n s1 s2, 
+n ∈ (s1 ∩ s2) -> n ∈ s2 /\ n ∈ s1.
+Proof.
+    intros. split.
+        - apply intersection_mem in H. auto.
+        - rewrite intersection_comm in H. apply intersection_mem in H.
+        auto.
+Qed.
+Lemma mem_union_double:forall n s1 s2, 
+n ∈ s1 \/ n ∈ s2-> n ∈ (s1 ∪ s2).
+Proof. intros. destruct H.
+    - apply mem_union. apply H.
+    - rewrite union_comm. apply mem_union. apply H.
+Qed.
+Lemma incl_intersect_app_union: forall a b c d,
+a ⊆ b ∩ (d) -> a ⊆ b ∩ (c ∪ d).
+Proof. 
+    intros. apply mem_incl. intros. rewrite mem_incl in H.
+    pose proof (H n H0). apply intersection_mem_double in H1. destruct H1.
+    apply mem_intersection. split.
+        - auto.
+        - rewrite union_comm. apply mem_union. auto.
+Qed.
+    
+Theorem LK_Interpol_strong: forall n (G1 G2 D1 D2 : list prop),
 G1 ++ G2 ⇒ D1 ++ D2 >< n -> 
 (exists (c : prop) m1 m2, G1 ⇒ c :: D1 >< m1 /\ c :: G2 ⇒ D2 >< m2
 (* /\ lil (atom_lista c) (list_intersect (atom_list(G1 ++ G2)) (atom_list(D1 ++ D2)))). *)

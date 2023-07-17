@@ -1,5 +1,11 @@
+Require Import PeanoNat.
+Require Import List.
+Require Import EqNat.
 Require Import BinNat BinNatDef BinPos BinPosDef.
 Include BinNatDef.N.
+Import List.ListNotations.
+
+
 
 Local Open Scope positive_scope.
 
@@ -837,6 +843,152 @@ apply unioun_mem in H1. destruct H1.
     apply mem_union. apply H'.
 Qed.
 
+Lemma intersection_mem_double: forall n s1 s2, 
+n ∈ (s1 ∩ s2) <-> n ∈ s2 /\ n ∈ s1.
+Proof.
+    intros. split.
+        - intros. split.
+            + apply intersection_mem in H. auto.
+            + rewrite intersection_comm in H. apply intersection_mem in H. auto.
+        - intros. apply mem_intersection in H. rewrite intersection_comm in H. auto.
+Qed.
+
+Lemma mem_union_double:forall n s1 s2, 
+n ∈ s1 \/ n ∈ s2 <-> n ∈ (s1 ∪ s2).
+Proof. intros. split.
+    - intros. destruct H.
+        + apply mem_union. apply H.
+        + rewrite union_comm. apply mem_union. apply H.
+    - intros. apply unioun_mem in H. auto.
+Qed.
+
+Lemma incl_intersect_app_union: forall a b c d,
+a ⊆ b ∩ (d) -> a ⊆ b ∩ (c ∪ d).
+Proof. 
+    intros. apply mem_incl. intros. rewrite mem_incl in H.
+    pose proof (H n H0). apply intersection_mem_double in H1. destruct H1.
+    apply mem_intersection. split.
+        - auto.
+        - rewrite union_comm. apply mem_union. auto.
+Qed.
+
+Theorem contrapositive : forall (P Q : Prop),
+  (P -> Q) -> (~Q -> ~P).
+Proof.
+  (* FILL IN HERE Admitted. *)
+  intros P Q H0. intros H1 H2. apply H1 in H0. apply H0. apply H2. Qed.
+Lemma inter_emp_falser: forall n s1 s2,
+s1 ∩ s2 = ∅ -> n ∈ s1 -> n ∈ s2 = false.
+Proof.
+    intros. destruct (n ∈ s2) eqn: E.  
+        - specialize (intersection_mem_double n s1 s2 ) as H'.
+        simpl in H0. destruct H' as [H1 H2]. pose proof (H2 (conj E H0)).
+        rewrite <- extensionality_iff in H; destruct H.
+        rewrite mem_incl in H. apply (H n) in H3. simpl in H3. discriminate.
+        - reflexivity.
+Qed.
+
+Lemma inter_emp_falsel: forall n s1 s2,
+s1 ∩ s2 = ∅ -> n ∈ s2 -> n ∈ s1 = false.
+Proof.
+    intros. destruct (n ∈ s1) eqn: E.  
+        - specialize (intersection_mem_double n s1 s2 ) as H'.
+        simpl in H0. destruct H' as [H1 H2]. pose proof (H2 (conj H0 E)).
+        rewrite <- extensionality_iff in H; destruct H.
+        rewrite mem_incl in H. apply (H n) in H3. simpl in H3. discriminate.
+        - reflexivity.
+Qed.
+
+Lemma mem_notmem: forall n n' s,
+(n ∈ s) -> (n' ∈ s) = false -> (Nat.eqb n n') = false.
+Proof.
+    intros. destruct (Nat.eqb n n') eqn: E; try reflexivity.
+    apply Nat.eqb_eq in E. rewrite <- E in H0. 
+    rewrite H in H0. discriminate.
+Qed.
+
+Lemma diff_union: forall n n' s,
+n' ∈ (s) -> ((Nat.eqb n n') = false) -> n' ∈ (s\{{n}}).
+Proof.
+    intros. rewrite <- mem_diff. split.
+        - assumption.
+        - apply EqNat.beq_nat_false in H0 as H0'. 
+        specialize (contrapositive (n' ∈ {{n}}) (n = n') (mem_singleton2 n n') H0') as H'.
+        apply Bool.not_true_is_false in H'. assumption.
+Qed.
+
+Lemma app_inter_emp: forall (n: nat) (s1 s2 s3: finset),
+({{ n }} ∪ s1 = s2 ∪ s3) -> s2 ∩ s3 = ∅ -> 
+((s1 = s2 ∪ s3) \/ (s1 = (s2 \ {{ n }}) ∪ s3) \/ (s1 = s2 ∪ (s3 \ {{ n }}))).
+Proof.
+    intros. 
+    apply extensionality_iff in H; destruct H.
+    rewrite mem_incl in H. specialize (H n) as H'.
+    rewrite mem_union in H'. specialize (H' eq_refl) as H'.
+    rewrite mem_incl in H1. specialize (H1 n H') as H1'.
+    apply unioun_mem in H'. apply unioun_mem in H1'.
+    destruct (n ∈ s1) eqn: E.
+        - left. apply extensionality; apply mem_incl; intros.
+            + specialize (H n0) as Hn'. apply Hn'. rewrite <- mem_union_double.
+            right. assumption.
+            + specialize (H1 n0 H2) as Hn'. rewrite <- mem_union_double in Hn'.
+            destruct Hn'.
+                *  apply mem_singleton2 in H3. rewrite <- H3. assumption.
+                * assumption.
+        - destruct H'.
+            + specialize (inter_emp_falser n s2 s3 H0 H2) as E'.
+            right. left. apply extensionality; apply mem_incl; intros.
+                * specialize (H n0) as Hn'. specialize (mem_notmem n0 n s1 H3 E) as H'n.
+                rewrite <- mem_union_double in Hn'. pose proof (Hn' (or_intror H3)).
+                rewrite <- mem_union_double in H4. rewrite <- mem_union_double. destruct H4.
+                {
+                    left. apply diff_union. apply H4. 
+                    rewrite Nat.eqb_sym. assumption.
+                }
+                {
+                    right. assumption.
+                }
+                * specialize (H1 n0) as H4. rewrite <- mem_union_double in H3. destruct H3.
+                {
+                    apply mem_diff in H3; destruct H3. rewrite <- mem_union_double in H4.
+                    pose proof (H4 (or_introl H3)) as H4. rewrite <- mem_union_double in H4.
+                    destruct H4.
+                        + rewrite H4 in H5. discriminate.
+                        + assumption.
+                }
+                {
+                    rewrite <- mem_union_double in H4. pose proof (H4 (or_intror H3)) as H4.
+                    rewrite <- mem_union_double in H4. destruct H4.
+                    + apply mem_singleton2 in H4. subst. rewrite H3 in E'. discriminate.
+                    + assumption.
+                }
+            + right. right. 
+            specialize (inter_emp_falsel n s2 s3 H0 H2) as E'.
+            apply extensionality; apply mem_incl; intros.
+                * specialize (H n0) as Hn'. specialize (mem_notmem n0 n s1 H3 E) as H'n.
+                rewrite <- mem_union_double in Hn'. pose proof (Hn' (or_intror H3)).
+                rewrite <- mem_union_double in H4. rewrite <- mem_union_double. destruct H4.
+                {
+                    left. assumption.
+                }
+                {
+                    right. apply diff_union; try rewrite Nat.eqb_sym; auto.
+                }
+                * specialize (H1 n0) as H4. rewrite <- mem_union_double in H3. destruct H3.
+                {
+                    rewrite <- mem_union_double in H4. pose proof (H4 (or_introl H3)) as H4.
+                    rewrite <- mem_union_double in H4. destruct H4.
+                        + apply mem_singleton2 in H4. subst. rewrite H3 in E'. discriminate.
+                        + assumption.
+                }
+                {
+                    apply mem_diff in H3; destruct H3. rewrite <- mem_union_double in H4.
+                    pose proof (H4 (or_intror H3)) as H4. rewrite <- mem_union_double in H4. destruct H4.
+                    + rewrite H4 in H5. discriminate.
+                    + assumption.
+                }
+        - apply mem_singleton1.
+Qed.
 (*        
 Check 1~0~1~0~1.
 Compute (∅ ⊆ ∅).

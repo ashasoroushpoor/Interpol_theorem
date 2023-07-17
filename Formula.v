@@ -1,6 +1,9 @@
 Require Import Lang.
 Require Import Finset.
 Require Import List.
+Require Import Sequent_Calculus_LK_set.
+Require Import BinNat BinNatDef BinPos BinPosDef.
+Include BinNatDef.N.
 Import List.ListNotations.
 
 Fixpoint weight (p : prop) : nat :=
@@ -66,6 +69,42 @@ Proof.
         reflexivity.
         - simpl. rewrite IHD. reflexivity.
 Qed.
+Fixpoint atoms_of_pos (p: positive) (n : nat): finset :=
+    match p with
+        | xH => atoms_of(nat_to_prop(n))
+        | xO p' => atoms_of_pos p' (S n)
+        | xI p' => atoms_of(nat_to_prop(n)) ∪ (atoms_of_pos p' (S n))
+    end.
+Definition atoms_of_set (s: finset): finset :=
+    match s with
+    | ∅ => ∅
+    | pos p => atoms_of_pos p 0 
+    end.
+
+Lemma pos_size_le_0: forall p, Pos.size_nat p <= 0 -> False.
+    Proof. intros.
+    induction p; apply Le.le_n_0_eq in H; discriminate.
+Qed.
+Lemma atoms_pos_double: forall n m p1 p2, 
+Pos.size_nat p1 <= n -> 
+atoms_of_pos (Pos.lor p1 p2) m = (atoms_of_pos p1 m) ∪ (atoms_of_pos p2 m).
+Proof.
+    intros. generalize dependent m. induction n.
+    - exfalso. apply pos_size_le_0 in H. assumption.
+    - intros. destruct p1.
+Lemma atoms_pos_union: forall p1 p2, atoms_of_pos (Pos.lor p1 p2) 0 = (atoms_of_pos p1 0) ∪ (atoms_of_pos p2 0).
+Proof.
+    
+
+Lemma atoms_set_union: forall s1 s2, atoms_of_set (s1 ∪ s2) = (atoms_of_set s1) ∪ (atoms_of_set s2).
+Proof.
+    intros. induction s1.
+        - simpl. reflexivity.
+        - induction p.
+            + simpl. admit.
+            + simpl.
+Qed.
+
 (* 
 Require Import BinNat BinNatDef BinPos BinPosDef.
 Fixpoint partition {T : Type} (l : list T) (mask : N) : list T :=

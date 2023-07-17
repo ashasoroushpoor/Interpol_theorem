@@ -14,46 +14,6 @@ Inductive Node : Type :=
 Notation "☉ M" := (onen M) (no associativity, at level 65).
 Notation "M1 ≍ M2" := (twon M1 M2 )(no associativity, at level 66). 
 
-(* Inductive LK : Node -> list prop -> list prop -> list prop -> list prop -> Prop :=
-(* Axiom : A |- A *)
-| LKA: forall p : prop, p +' [] ⇒ p +'' [] >< leaf
-(* Structral Rules *)
-(* Weakening *)
-|LKrW: forall G1 G2 D1 D2 (a: prop) n, G1 +' G2 ⇒ D1 +'' D2 >< n-> G1 +' G2 ⇒ a :: D1 +'' D2 >< onen n
-|LKlW: forall G1 G2 D1 D2 (a: prop) n, G1 +' G2 ⇒ D1 +'' D2 >< n -> a :: G1 +' G2  ⇒ D1 +'' D2 >< onen n
-(* Exchange *)
-|LKrE: forall G1 G2 D1 D2 (a b : prop) n, G1 +' G2 ⇒ (a :: b :: D1) +'' D2 >< n -> 
-        G1 +' G2 ⇒ (b :: a :: D1) +'' D2 >< onen n
-|LKlE: forall G1 G2 D1 D2 (a b : prop) n, (a :: b :: G1) +' G2 ⇒ D1 +'' D2 >< n ->
-        (b :: a :: G1) +' G2 ⇒ D1 +'' D2 >< onen n
-(* Contraction *)
-|LKrC: forall G1 G2 D1 D2 (a : prop) n, G1 +' G2 ⇒ (a :: a :: D1) +'' D2 >< n -> G1 +' G2 ⇒ (a :: D1) +'' D2 >< onen n
-|LKlC: forall G1 G2 D1 D2 (a : prop) n, a :: a :: G1 +' G2  ⇒ D1 +'' D2 >< n -> a :: G1 +' G2 ⇒ D1 +'' D2 >< onen n
-(* Logical Rules *)
-(* Conjunction *)
-|LKrA: forall G1 G2 D1 D2 (a b: prop) m n,
-G1 +' G2 ⇒ a :: D1 +'' D2 >< m-> G1 +' G2⇒ b :: D1 +'' D2 >< n -> G1 +' G2 ⇒ (a ∧ b) :: D1 +'' D2  >< twon m n
-|LKl1A: forall G1 G2 D1 D2 (a b : prop) n,
-a :: G1 +' G2 ⇒ D1 +'' D2 >< n -> (a ∧ b) :: G1 +' G2 ⇒ D1 +'' D2 >< onen n
-|LKl2A: forall G1 G2 D1 D2 (a b : prop) n,
-b :: G1 +' G2 ⇒ D1 +'' D2 >< n -> (a ∧ b) :: G1 +' G2 ⇒ D1 +'' D2 >< onen n
-(* Disjunction *)
-|LKr1O: forall G1 G2 D1 D2 (a b : prop) n,
-G1 +' G2 ⇒ a :: D1 +'' D2 >< n -> G1 +' G2 ⇒ (a ∨ b) :: D1 +'' D2 >< onen n
-|LKr2O: forall G1 G2 D1 D2 (a b : prop) n,
-G1 +' G2 ⇒ b :: D1 +'' D2 >< n -> G1 +' G2 ⇒ (a ∨ b) :: D1 +'' D2 >< onen n
-|LKlO: forall G1 G2 D1 D2 (a b : prop) m n,
-a :: G1 +' G2 ⇒ D1 +'' D2 >< m -> b :: G1 +' G2 ⇒ D1 +'' D2 >< n -> (a ∨ b) :: G1 +' G2  ⇒ D1 +'' D2 >< twon m n
-(* Negation *)
-|LKrN: forall G1 G2 D1 D2 (a : prop) n, a :: G1 +' G2 ⇒ D1 +'' D2 >< n -> G1 +' G2 ⇒ (¬ a) :: D1 +'' D2 >< onen n
-|LKlN: forall G1 G2 D1 D2 (a : prop) n, G1 +' G2 ⇒ a :: D1 +'' D2 >< n -> (¬ a) :: G1 +' G2  ⇒ D1 +'' D2 >< onen n
-(* Implication *)
-|LKrI: forall G1 G2 D1 D2 (a b : prop) n, a :: G1 +' G2  ⇒ b :: D1 +'' D2 >< n ->
-        G1 +' G2 ⇒ (a ⊃ b) :: D1 +'' D2 >< onen n
-|LKlI: forall G1 G2 D1 D2 (a b : prop) m n,
-        G1 +' G2 ⇒ a :: D1 +'' D2 >< m -> b :: G1 +' G2 ⇒ D1 +'' D2 >< n->
-        (a ⊃ b) :: G1 +' G2 ⇒ D1 +'' D2 >< twon m n
-where "G1 +' G2 ⇒ D1 +'' D2 >< n" := (LK n G1 G2 D1 D2). *)
 
 
 Inductive LK : Node -> list prop -> list prop -> Prop :=
